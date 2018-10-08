@@ -1,24 +1,46 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
 
 class App extends Component {
+  constructor() {
+    super();
+    this.state = {
+      result: []
+    };
+    this._onClick = this._onClick.bind(this);
+  }
+
+  _onClick(status) {
+    fetch(`http://localhost:8081/v2/pet/findByStatus?status=${status}`, {
+      headers: { accept: 'application/json' }
+    })
+      .then(res => res.json())
+      .then(res => this.setState({ result: res }));
+  }
+
+  renderItems(item, index) {
+    return (
+      <div key={index}>
+        name: {item.name}, status: {item.status}
+      </div>
+    );
+  }
+
   render() {
+    console.log(this.state.result);
     return (
       <div className="App">
         <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
+          <h1>Swagger stub server</h1>
           <p>
-            Edit <code>src/App.js</code> and save to reload.
+            <a href="https://petstore.swagger.io/">Swagger Petstore</a>
           </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
+          <button onClick={() => this._onClick('available')}>
+            GET /pet/findByStatus available
+          </button>
+          <h2>Result</h2>
+          {this.state.result.map((item, index) =>
+            this.renderItems(item, index)
+          )}
         </header>
       </div>
     );
